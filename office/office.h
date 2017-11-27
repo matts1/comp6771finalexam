@@ -13,6 +13,7 @@ public:
 
     virtual ~Cell() = default;
     std::vector<SumCell*> parents;
+    void invalidate_parents();
 };
 
 class SumCell: public Cell {
@@ -25,12 +26,15 @@ public:
 
     int eval() const override;
     void addChild(Cell& cell);
-    void invalidate();
+    void invalidate() {
+        valid = false;
+        invalidate_parents();
+    }
 
+    mutable bool valid = false;
 private:
     std::vector<Cell*> children;
     mutable int cache;
-    mutable bool valid = false;
 };
 
 class IntCell: public Cell {

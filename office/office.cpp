@@ -51,6 +51,7 @@ void Spreadsheet::erase(int id) {
     if (cells.find(id) == cells.end())
         return;
     auto& cell = getCell(id);
+    cell.invalidate_parents();
     for (auto parent : cell.parents) {
         auto& children = parent->getChildren();
         children.erase(std::remove(children.begin(), children.end(), &cell), children.end());
@@ -61,10 +62,12 @@ void Spreadsheet::erase(int id) {
 void SumCell::addChild(Cell& cell) {
     children.push_back(&cell);
     cell.parents.push_back(this);
+    invalidate();
 }
 
 void IntCell::setValue(int value) {
     this->value = value;
+    invalidate_parents();
 }
 
 int IntCell::eval() const {
@@ -81,4 +84,11 @@ int SumCell::eval() const {
         valid = true;
     }
     return cache;
+}
+
+void Cell::invalidate_parents() {
+    for (auto* parent : parents) {
+        if (parent->valid)
+            parent->invalidate();
+    }
 }
