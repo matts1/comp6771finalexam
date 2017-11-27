@@ -24,6 +24,8 @@ public:
 
 private:
     std::vector<Cell*> children;
+    mutable int cache;
+    mutable bool valid = false;
 };
 
 class IntCell: public Cell {

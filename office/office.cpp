@@ -62,9 +62,13 @@ int IntCell::eval() const {
 }
 
 int SumCell::eval() const {
-    auto total = 0;
-    for (const auto& child : children) {
-        total += child->eval();
+    if (!valid) {
+        auto total = 0;
+        for (const auto &child : children) {
+            total += child->eval();
+        }
+        cache = total;
+        valid = true;
     }
-    return total;
+    return cache;
 }
