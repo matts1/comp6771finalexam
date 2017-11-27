@@ -1,29 +1,33 @@
-#include <algorithm>
-
 #include "office.h"
 
 
 /*
- * makes the cell at cell id into a sum cell.
- * If the cell already exists (only for erase and onwards), the cell must be cleared first
+ * makes the cell id into a sum cell.
+ * If the cell already exists (only for subtask 4 and onwards), the cell must be cleared first
  */
 void Spreadsheet::setSumCell(int id) {
+    erase(id);
+    cells.emplace(id, std::make_unique<SumCell>());
 }
 
 /*
- * makes the cell at cell id contain an integer cell with the value val
+ * makes the cell id into an integer cell with the value val
  * If the cell already exists (only for erase and onwards), the cell must be erased first
  */
 void Spreadsheet::setIntCell(int id, int val) {
+    erase(id);
+    cells.emplace(id, std::make_unique<IntCell>(val));
 }
 
 /*
- * gets the cell at cell id, or throw std::out_of_range if the cell does not exist
+ * gets the value in the cell id, or throw std::out_of_range if the cell does not exist
  */
 Cell& Spreadsheet::getCell(int id) {
+    return *cells.at(id);
 }
 
 const Cell& Spreadsheet::getCell(int id) const {
+    return *cells.at(id);
 }
 
 /*
@@ -33,21 +37,22 @@ const Cell& Spreadsheet::getCell(int id) const {
  * If both exceptions would be thrown, throw the std::out_of_range
  */
 void Spreadsheet::addChild(int parent, int child) {
+    auto& childc = getCell(child);
+    auto& parentc = dynamic_cast<SumCell&>(getCell(parent));
+    parentc.addChild(childc);
 }
 
 /*
- * erases the cell at cell id. Does nothing if there is no cell at cell id. Removes any references to the cell
+ * erases any value currently in the cell. Does nothing if the cell doesn't currently exist. Removes any references to the cell
  */
 void Spreadsheet::erase(int id) {
+
 }
 
-const std::vector<Cell*>& SumCell::getChildren() const {
+const std::vector<Cell*>& SumCell::getChildren() {
     return children;
 }
 
-void IntCell::setValue(int value) {
-}
-
-int Cell::eval() const {
-    return 0;
+void SumCell::addChild(Cell& cell) {
+    children.push_back(&cell);
 }
