@@ -1,9 +1,11 @@
+#include <algorithm>
+
 #include "office.h"
 
 
 /*
  * makes the cell id into a sum cell.
- * If the cell already exists (only for subtask 4 and onwards), the cell must be cleared first
+ * If the cell already exists (only for erase and onwards), the cell must be cleared first
  */
 void Spreadsheet::setSumCell(int id) {
     erase(id);
@@ -46,15 +48,23 @@ void Spreadsheet::addChild(int parent, int child) {
  * erases any value currently in the cell. Does nothing if the cell doesn't currently exist. Removes any references to the cell
  */
 void Spreadsheet::erase(int id) {
-
-}
-
-const std::vector<Cell*>& SumCell::getChildren() {
-    return children;
+    if (cells.find(id) == cells.end())
+        return;
+    auto& cell = getCell(id);
+    for (auto parent : cell.parents) {
+        auto& children = parent->getChildren();
+        children.erase(std::remove(children.begin(), children.end(), &cell), children.end());
+    }
+    cells.erase(id);
 }
 
 void SumCell::addChild(Cell& cell) {
     children.push_back(&cell);
+    cell.parents.push_back(this);
+}
+
+void IntCell::setValue(int value) {
+    this->value = value;
 }
 
 int IntCell::eval() const {

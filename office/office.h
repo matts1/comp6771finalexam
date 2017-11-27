@@ -5,22 +5,27 @@
 #include <vector>
 #include <unordered_map>
 
+class SumCell;
+
 class Cell {
 public:
     virtual int eval() const = 0;
 
     virtual ~Cell() = default;
+    std::vector<SumCell*> parents;
 };
 
 class SumCell: public Cell {
 public:
     /*
-     * Returns all the children of this cell, ordered by when the child was added (normhal ordering)
+     * Returns all the children of this cell, ordered by the order they were added
      */
-    const std::vector<Cell*>& getChildren();
+    const std::vector<Cell*>& getChildren() const { return children; }
+    std::vector<Cell*>& getChildren() { return children; }
 
     int eval() const override;
     void addChild(Cell& cell);
+    void invalidate();
 
 private:
     std::vector<Cell*> children;
@@ -33,7 +38,7 @@ public:
     int eval() const override;
 
     IntCell(int value): value{value} {}
-    void setValue(int value) { this->value = value; }
+    void setValue(int value);
 
 private:
     int value;
@@ -43,7 +48,7 @@ class Spreadsheet {
 public:
     /*
      * makes the cell id into a sum cell.
-     * If the cell already exists (only for subtask 4 and onwards), the cell must be cleared first
+     * If the cell already exists (only for erase and onwards), the cell must be cleared first
      */
     void setSumCell(int id);
 
