@@ -56,3 +56,15 @@ const std::vector<Cell*>& SumCell::getChildren() {
 void SumCell::addChild(Cell& cell) {
     children.push_back(&cell);
 }
+
+int IntCell::eval() const {
+    return value;
+}
+
+int SumCell::eval() const {
+    auto total = 0;
+    for (const auto& child : children) {
+        total += child->eval();
+    }
+    return total;
+}

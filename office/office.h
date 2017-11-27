@@ -7,7 +7,7 @@
 
 class Cell {
 public:
-    int eval() const;
+    virtual int eval() const = 0;
 
     virtual ~Cell() = default;
 };
@@ -18,6 +18,8 @@ public:
      * Returns all the children of this cell, ordered by when the child was added (normhal ordering)
      */
     const std::vector<Cell*>& getChildren();
+
+    int eval() const override;
     void addChild(Cell& cell);
 
 private:
@@ -26,6 +28,8 @@ private:
 
 class IntCell: public Cell {
 public:
+    int eval() const override;
+
     IntCell(int value): value{value} {}
     void setValue(int value) { this->value = value; }
 
